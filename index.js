@@ -107,8 +107,17 @@ async function run() {
         });
 
 
+        // Get bookings for guest
+        app.get('/bookings', async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                res.send([])
+            }
+            const query = { 'guest.email': email };
+            const result = await bookingsCollection.find(query).toArray();
+            res.send(result);
+        })
 
-        
 
 
 
