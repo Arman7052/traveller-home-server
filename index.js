@@ -62,11 +62,6 @@ async function run() {
             res.send(result);
         });
 
-        // Get all rooms
-        app.get('/rooms', async (req, res) => {
-            const result = await roomsCollection.find().toArray()
-            res.send(result)
-        });
 
         // Save a room in database
         app.post('/rooms', async (req, res) => {
@@ -76,6 +71,40 @@ async function run() {
             res.send(result);
         });
 
+        // Get all rooms
+        app.get('/rooms', async (req, res) => {
+            const result = await roomsCollection.find().toArray();
+            res.send(result);
+        });
+
+
+        // Get a single room
+        app.get('/rooms/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { 'host.email': email };
+            const result = await roomsCollection.find(query).toArray();
+
+            console.log(result);
+            res.send(result);
+        })
+
+        // Get a single room
+        app.get('/room/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await roomsCollection.findOne(query);
+            console.log(result);
+            res.send(result);
+        });
+
+
+        // Save a booking in database
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            console.log(booking);
+            const result = await bookingsCollection.insertOne(booking);
+            res.send(result);
+        });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
