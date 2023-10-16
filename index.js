@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
@@ -12,13 +13,14 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(morgan('dev'))
 
 
 
 // ---------------MongoDB DATABASE-----------------------------------//
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pf5eojy.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -49,7 +51,7 @@ async function run() {
                 $set: user,
             };
             const result = await usersCollection.updateOne(query, updateDoc, options);
-            console.log(result);
+            // console.log(result);
             res.send(result);
         });
 
@@ -58,7 +60,7 @@ async function run() {
             const email = req.params.email;
             const query = { email: email };
             const result = await usersCollection.findOne(query);
-            console.log(result);
+            // console.log(result);
             res.send(result);
         });
 
@@ -66,7 +68,7 @@ async function run() {
         // Save a room in database
         app.post('/rooms', async (req, res) => {
             const room = req.body;
-            console.log(room);
+            // console.log(room);
             const result = await roomsCollection.insertOne(room);
             res.send(result);
         });
@@ -78,13 +80,13 @@ async function run() {
         });
 
 
-        // Get a single room
+        // Get a single room by email
         app.get('/rooms/:email', async (req, res) => {
             const email = req.params.email;
             const query = { 'host.email': email };
             const result = await roomsCollection.find(query).toArray();
 
-            console.log(result);
+            // console.log(result);
             res.send(result);
         })
 
@@ -93,7 +95,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await roomsCollection.findOne(query);
-            console.log(result);
+            // console.log(result);
             res.send(result);
         });
 
@@ -109,7 +111,7 @@ async function run() {
         // Save a booking in database
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
-            console.log(booking);
+            // console.log(booking);
             const result = await bookingsCollection.insertOne(booking);
             res.send(result);
         });
@@ -124,7 +126,7 @@ async function run() {
             const query = { 'guest.email': email };
             const result = await bookingsCollection.find(query).toArray();
             res.send(result);
-        })
+        });
 
         // Update room booking status
         app.patch('/rooms/status/:id', async (req, res) => {
@@ -138,7 +140,7 @@ async function run() {
             };
             const update = await roomsCollection.updateOne(query, updateDoc);
             res.send(update);
-        })
+        });
 
 
         // Delete or cancel booking
@@ -148,7 +150,7 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const result = await bookingsCollection.deleteOne(query);
             res.send(result);
-        })
+        });
 
 
 
